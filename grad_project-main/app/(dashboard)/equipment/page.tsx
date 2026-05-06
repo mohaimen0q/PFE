@@ -832,26 +832,18 @@ export default function EquipmentPage() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
-            {t("equipmentList")}
-          </h1>
-          <p className="text-muted-foreground">
-            {t('manageAndMonitorAllY')
-            }
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2 min-w-0">
-          <Button variant="outline" className="gap-2" onClick={onExport} disabled={filteredEquipment.length === 0}>
-            <Download className="h-4 w-4" />
+    <div className="space-y-3">
+      {/* Header - Compact */}
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <h1 className="text-base font-semibold text-foreground">{t("equipmentList")}</h1>
+        <div className="flex gap-1.5">
+          <Button variant="outline" size="sm" className="h-7 gap-1.5" onClick={onExport} disabled={filteredEquipment.length === 0}>
+            <Download className="h-3 w-3" />
             {t("export")}
           </Button>
           {canManage && (
-            <Button onClick={openCreate} className="gap-2">
-              <Plus className="h-4 w-4" />
+            <Button size="sm" className="h-7 gap-1.5 bg-primary" onClick={openCreate}>
+              <Plus className="h-3 w-3" />
               {t("addEquipment")}
             </Button>
           )}
@@ -1395,9 +1387,9 @@ export default function EquipmentPage() {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="list" className="space-y-6">
-      {/* Stats */}
-      <div className="grid gap-4 sm:grid-cols-3">
+        <TabsContent value="list" className="space-y-3">
+      {/* Stats - Compact */}
+      <div className="grid gap-2 grid-cols-3">
         {stats.map((stat) => (
           <motion.div
             key={stat.label}
@@ -1405,13 +1397,13 @@ export default function EquipmentPage() {
             animate={{ opacity: 1, y: 0 }}
           >
             <Card>
-              <CardContent className="flex items-center gap-4 p-6">
-                <div className={`rounded-xl p-3 ${stat.bgColor}`}>
-                  <stat.icon className={`h-6 w-6 ${stat.color}`} />
+              <CardContent className="flex items-center gap-2 p-2.5">
+                <div className={`rounded p-1.5 ${stat.bgColor}`}>
+                  <stat.icon className={`h-4 w-4 ${stat.color}`} />
                 </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">{stat.label}</p>
-                  <p className="text-2xl font-bold text-foreground">{stat.value}</p>
+                <div className="min-w-0">
+                  <p className="text-[9px] text-muted-foreground uppercase truncate">{stat.label}</p>
+                  <p className="text-lg font-bold text-foreground">{stat.value}</p>
                 </div>
               </CardContent>
             </Card>
@@ -1419,48 +1411,40 @@ export default function EquipmentPage() {
         ))}
       </div>
 
-      {/* Filters */}
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder={t('searchEquipment')}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9"
-              />
-            </div>
-            <div className="flex flex-wrap gap-2 min-w-0">
-              <Select value={classificationFilter} onValueChange={setClassificationFilter}>
-                <SelectTrigger className="w-40">
-                  <SelectValue placeholder={t("classification")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t('all')}</SelectItem>
-                  {classificationOptions.map((c) => (
-                    <SelectItem key={c} value={c}>
-                      {c}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-40">
-                  <SelectValue placeholder={t("status")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t('all')}</SelectItem>
-                  <SelectItem value="OPERATIONAL">{t("operational")}</SelectItem>
-                  <SelectItem value="UNDER_REPAIR">{t("underRepair")}</SelectItem>
-                  <SelectItem value="ARCHIVED">{t("archived")}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Filters - Compact */}
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="relative flex-1 min-w-48">
+          <Search className="absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder={t('searchEquipment')}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="h-7 pl-7 text-xs"
+          />
+        </div>
+        <Select value={classificationFilter} onValueChange={setClassificationFilter}>
+          <SelectTrigger className="w-28 h-7 text-xs">
+            <SelectValue placeholder={t("classification")} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{t('all')}</SelectItem>
+            {classificationOptions.map((c) => (
+              <SelectItem key={c} value={c}>{c}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <SelectTrigger className="w-28 h-7 text-xs">
+            <SelectValue placeholder={t("status")} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{t('all')}</SelectItem>
+            <SelectItem value="OPERATIONAL">{t("operational")}</SelectItem>
+            <SelectItem value="UNDER_REPAIR">{t("underRepair")}</SelectItem>
+            <SelectItem value="ARCHIVED">{t("archived")}</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
       {/* Table */}
       <Card>

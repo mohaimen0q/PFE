@@ -224,26 +224,15 @@ export default function InventoryPage() {
   }
 
   return (
-    <motion.div 
-      initial="initial" 
-      animate="animate" 
-      className="flex-1 space-y-6 overflow-auto"
-    >
-      {/* Header */}
-      <motion.div variants={fadeInUp} className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            {t('sparePartsInventory')}
-          </h1>
-          <p className="text-muted-foreground">
-            {t('manageYourSpareParts')}
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2 min-w-0">
+    <div className="space-y-3">
+      {/* Header - Compact */}
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <h1 className="text-base font-semibold text-foreground">{t('sparePartsInventory')}</h1>
+        <div className="flex gap-1.5">
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20">
-                <Plus className="h-4 w-4 mr-2" />
+              <Button size="sm" className="h-7 gap-1.5 bg-primary">
+                <Plus className="h-3 w-3" />
                 {t('addSparePart')}
               </Button>
             </DialogTrigger>
@@ -332,133 +321,94 @@ export default function InventoryPage() {
         </div>
       </motion.div>
 
-      {/* Stats */}
-      <motion.div variants={fadeInUp} className="grid gap-4 md:grid-cols-4">
-        <Card className="shadow-sm border-border">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Valuation</CardTitle>
-            <DollarSign className="h-4 w-4 text-emerald-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">${valuation.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
-            <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-wider">Asset value in stock</p>
-          </CardContent>
-        </Card>
-        <Card className="shadow-sm border-border">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 text-rose-500">
-            <CardTitle className="text-sm font-medium">Low Stock Alerts</CardTitle>
-            <AlertTriangle className="h-4 w-4" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-rose-500">
-              {parts.filter(p => p.quantityInStock <= p.minStockLevel).length}
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="shadow-sm border-border">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Pending Restocks</CardTitle>
-            <Truck className="h-4 w-4 text-amber-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{pendingRestocks.length}</div>
-          </CardContent>
-        </Card>
-        <Card className="shadow-sm border-border">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Stock Integrity</CardTitle>
-            <CheckCircle className="h-4 w-4 text-blue-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">100%</div>
-          </CardContent>
-        </Card>
-      </motion.div>
-
-      {/* Manager Review Section */}
-      {(user?.roleName === 'ADMIN' || user?.roleName === 'MAINTENANCE_MANAGER') && pendingRestocks.length > 0 && (
-        <motion.div variants={fadeInUp}>
-          <Card className="border-amber-500/20 bg-amber-500/5 backdrop-blur-sm">
-            <CardHeader>
-              <CardTitle className="text-sm font-bold uppercase tracking-wider opacity-80">Pending Manager Review</CardTitle>
-              <CardDescription>Verify and approve stock replenishment requests from technicians.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {pendingRestocks.map(req => {
-                  const part = parts.find(p => p.partId === req.partId)
-                  return (
-                    <div key={req.requestId} className="flex items-center justify-between p-3 rounded-lg border border-amber-500/10 bg-background/50">
-                      <div className="flex items-center gap-3">
-                        <Truck className="h-5 w-5 text-amber-500" />
-                        <div>
-                          <p className="font-medium text-sm">{part?.name || 'Unknown Part'} (x{req.quantity})</p>
-                          <p className="text-xs text-muted-foreground">Requested {new Date(req.createdAt).toLocaleDateString()}</p>
-                        </div>
-                      </div>
-                      <div className="flex flex-wrap gap-2 min-w-0">
-                        <Button size="sm" variant="outline" className="h-8 shadow-sm">Details</Button>
-                        <Button size="sm" variant="ghost" className="h-8 text-rose-600 hover:text-rose-700 hover:bg-rose-50" onClick={() => handleRejectRestock(req.requestId)}>Decline</Button>
-                        <Button 
-                          size="sm" 
-                          className="h-8 bg-amber-600 hover:bg-amber-700 shadow-lg shadow-amber-600/20" 
-                          onClick={() => {
-                            setSelectedRequestForApproval(req)
-                            setApprovalQty(req.quantity)
-                            setIsApprovalDialogOpen(true)
-                          }}
-                        >
-                          Approve Arrival
-                        </Button>
-                      </div>
-                    </div>
-                  )
-                })}
+      {/* Stats - Compact Grid */}
+      <div className="grid gap-2 grid-cols-2 lg:grid-cols-4">
+        {[
+          { label: "Total Valuation", value: `$${valuation.toLocaleString(undefined, { minimumFractionDigits: 0 })}`, icon: DollarSign, color: "text-success", bg: "bg-success/10" },
+          { label: "Low Stock", value: parts.filter(p => p.quantityInStock <= p.minStockLevel).length, icon: AlertTriangle, color: "text-destructive", bg: "bg-destructive/10" },
+          { label: "Pending Restocks", value: pendingRestocks.length, icon: Truck, color: "text-warning", bg: "bg-warning/10" },
+          { label: "Stock Integrity", value: "100%", icon: CheckCircle, color: "text-info", bg: "bg-info/10" },
+        ].map((stat, i) => (
+          <Card key={i}>
+            <CardContent className="flex items-center gap-2 p-2.5">
+              <div className={`rounded p-1.5 ${stat.bg}`}>
+                <stat.icon className={`h-4 w-4 ${stat.color}`} />
+              </div>
+              <div className="min-w-0">
+                <p className="text-[9px] text-muted-foreground uppercase truncate">{stat.label}</p>
+                <p className="text-lg font-bold text-foreground">{stat.value}</p>
               </div>
             </CardContent>
           </Card>
-        </motion.div>
+        ))}
+      </div>
+
+      {/* Manager Review - Compact */}
+      {(user?.roleName === 'ADMIN' || user?.roleName === 'MAINTENANCE_MANAGER') && pendingRestocks.length > 0 && (
+        <Card className="border-warning/20 bg-warning/5">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Pending Review</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="space-y-2">
+              {pendingRestocks.map(req => {
+                const part = parts.find(p => p.partId === req.partId)
+                return (
+                  <div key={req.requestId} className="flex items-center justify-between p-2 rounded border border-warning/10 bg-background/50">
+                    <div className="flex items-center gap-2">
+                      <Truck className="h-4 w-4 text-warning" />
+                      <div>
+                        <p className="text-xs font-medium">{part?.name || 'Unknown'} (x{req.quantity})</p>
+                        <p className="text-[9px] text-muted-foreground">{new Date(req.createdAt).toLocaleDateString()}</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-1">
+                      <Button size="sm" variant="ghost" className="h-6 text-xs text-destructive" onClick={() => handleRejectRestock(req.requestId)}>Decline</Button>
+                      <Button size="sm" className="h-6 text-xs bg-warning hover:bg-warning/90" onClick={() => { setSelectedRequestForApproval(req); setApprovalQty(req.quantity); setIsApprovalDialogOpen(true); }}>Approve</Button>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </CardContent>
+        </Card>
       )}
 
-      {/* Filters */}
-      <motion.div variants={fadeInUp} className="flex flex-col gap-4 md:flex-row md:items-center flex-wrap min-w-0">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      {/* Filters - Compact */}
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="relative flex-1 min-w-48">
+          <Search className="absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
           <Input 
             placeholder={t('searchByNameOrSKU')} 
-            className="pl-9 bg-card border-border shadow-sm"
+            className="h-7 pl-7 text-xs"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <div className="flex flex-wrap gap-2 min-w-0">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="bg-card border-border shadow-sm">
-                <Filter className="h-4 w-4 mr-2" />
-                Category: {categoryFilter}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem onClick={() => setCategoryFilter("all")}>All Categories</DropdownMenuItem>
-              {categories.map(cat => (
-                <DropdownMenuItem key={cat} onClick={() => setCategoryFilter(cat)}>{cat}</DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </motion.div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm" className="h-7 text-xs gap-1.5">
+              <Filter className="h-3 w-3" />
+              {categoryFilter === 'all' ? 'All' : categoryFilter}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-40">
+            <DropdownMenuItem onClick={() => setCategoryFilter("all")}>All Categories</DropdownMenuItem>
+            {categories.map(cat => (
+              <DropdownMenuItem key={cat} onClick={() => setCategoryFilter(cat)}>{cat}</DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
 
-      {/* Inventory List */}
-      <motion.div variants={fadeInUp}>
-        <Card className="border-border shadow-sm overflow-hidden">
-          <CardContent className="p-0">
-            {isLoading ? (
-              <div className="flex flex-col items-center justify-center py-20 gap-4">
-                <div className="h-12 w-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-                <p className="animate-pulse">Loading core database...</p>
-              </div>
-            ) : (
+      {/* Inventory Table */}
+      <Card>
+        <CardContent className="p-0">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="h-6 w-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : (
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
@@ -529,34 +479,23 @@ export default function InventoryPage() {
                 </Table>
               </div>
             )}
-          </CardContent>
           {totalPages > 1 && (
-            <div className="flex items-center justify-between border-t border-border p-4">
+            <div className="flex items-center justify-between border-t p-4">
               <p className="text-sm text-muted-foreground">
                 {t('showing')} <span className="font-medium">{((currentPage - 1) * itemsPerPage) + 1}</span> {t('to')} <span className="font-medium">{Math.min(currentPage * itemsPerPage, filteredParts.length)}</span> {t('of')} <span className="font-medium">{filteredParts.length}</span> {t('results')}
               </p>
               <div className="flex flex-wrap gap-2 min-w-0">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                  disabled={currentPage === 1}
-                >
+                <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>
                   {t('previous')}
                 </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                  disabled={currentPage === totalPages}
-                >
+                <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>
                   {t('next')}
                 </Button>
               </div>
             </div>
           )}
-        </Card>
-      </motion.div>
+        </CardContent>
+      </Card>
 
       {/* Restock Request Dialog (Technicians/Fall-through) */}
       <Dialog open={isRestockDialogOpen} onOpenChange={setIsRestockDialogOpen}>
@@ -643,6 +582,6 @@ export default function InventoryPage() {
           </div>
         </DialogContent>
       </Dialog>
-    </motion.div>
+    </div>
   )
 }

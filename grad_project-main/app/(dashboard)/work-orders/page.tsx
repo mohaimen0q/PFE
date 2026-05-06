@@ -173,27 +173,16 @@ export default function WorkOrdersPage() {
   }
 
   return (
-    <motion.div 
-      initial="initial" 
-      animate="animate" 
-      className="flex-1 space-y-6 overflow-auto"
-    >
-      {/* Header */}
-      <motion.div variants={fadeInUp} className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            {t('workOrders')}
-          </h1>
-          <p className="text-muted-foreground">
-            {t('manageYourMaintenanc')}
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2 min-w-0">
+    <div className="space-y-3">
+      {/* Header - Compact */}
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <h1 className="text-base font-semibold text-foreground">{t('workOrders')}</h1>
+        <div className="flex gap-1.5">
           {!user?.hasRole('TECHNICIAN') && (
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20">
-                  <Plus className="h-4 w-4 mr-2" />
+                <Button size="sm" className="h-7 gap-1.5 bg-primary">
+                  <Plus className="h-3 w-3" />
                   {t('newWorkOrder')}
                 </Button>
               </DialogTrigger>
@@ -269,81 +258,54 @@ export default function WorkOrdersPage() {
         </div>
       </motion.div>
 
-      {/* Stats Overview */}
-      <motion.div variants={fadeInUp} className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      {/* Stats - Compact Grid */}
+      <div className="grid gap-2 grid-cols-2 lg:grid-cols-4">
         {[
-          { 
-            title: t('inProgress'), 
-            count: workOrders.filter(wo => wo.status === 'IN_PROGRESS').length, 
-            icon: Clock, 
-            color: "text-blue-500",
-            bg: "bg-blue-500/10"
-          },
-          { 
-            title: t('created'), 
-            count: workOrders.filter(wo => wo.status === 'CREATED').length, 
-            icon: AlertCircle, 
-            color: "text-blue-500",
-            bg: "bg-blue-500/10"
-          },
-          { 
-            title: t('completed'), 
-            count: workOrders.filter(wo => wo.status === 'COMPLETED').length, 
-            icon: CheckCircle2, 
-            color: "text-emerald-500",
-            bg: "bg-emerald-500/10"
-          },
-          { 
-            title: t('urgent'), 
-            count: workOrders.filter(wo => wo.priority === 'CRITICAL').length, 
-            icon: AlertCircle, 
-            color: "text-rose-500",
-            bg: "bg-rose-500/10"
-          },
+          { label: t('inProgress'), value: workOrders.filter(wo => wo.status === 'IN_PROGRESS').length, icon: Clock, color: "text-info", bg: "bg-info/10" },
+          { label: t('created'), value: workOrders.filter(wo => wo.status === 'CREATED').length, icon: AlertCircle, color: "text-primary", bg: "bg-primary/10" },
+          { label: t('completed'), value: workOrders.filter(wo => wo.status === 'COMPLETED').length, icon: CheckCircle2, color: "text-success", bg: "bg-success/10" },
+          { label: t('urgent'), value: workOrders.filter(wo => wo.priority === 'CRITICAL').length, icon: AlertCircle, color: "text-destructive", bg: "bg-destructive/10" },
         ].map((stat, i) => (
-          <Card key={i} className="shadow-sm border-border">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">{stat.title}</CardTitle>
-              <div className={`${stat.bg} p-2 rounded-lg`}>
+          <Card key={i}>
+            <CardContent className="flex items-center gap-2 p-2.5">
+              <div className={`rounded p-1.5 ${stat.bg}`}>
                 <stat.icon className={`h-4 w-4 ${stat.color}`} />
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stat.count}</div>
+              <div className="min-w-0">
+                <p className="text-[9px] text-muted-foreground uppercase truncate">{stat.label}</p>
+                <p className="text-lg font-bold text-foreground">{stat.value}</p>
+              </div>
             </CardContent>
           </Card>
         ))}
-      </motion.div>
+      </div>
 
-      {/* Filters & Search */}
-      <motion.div variants={fadeInUp} className="flex flex-col gap-4 md:flex-row md:items-center flex-wrap min-w-0">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      {/* Filters - Compact */}
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="relative flex-1 min-w-48">
+          <Search className="absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
           <Input 
             placeholder={t('searchWorkOrders')} 
-            className="pl-9 bg-card border-border shadow-sm"
+            className="h-7 pl-7 text-xs"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <div className="flex flex-wrap gap-2 min-w-0">
-          <Button 
-            variant="outline" 
-            onClick={() => setShowArchived(!showArchived)}
-            className={cn(
-              "bg-card border-border shadow-sm transition-colors",
-              showArchived && "bg-primary/10 border-primary text-primary"
-            )}
-          >
-            {showArchived ? (t('hideArchived')) : (t('showArchived'))}
-          </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="bg-card border-border shadow-sm">
-                <Filter className="h-4 w-4 mr-2" />
-                {t('filter')}: {filter.charAt(0).toUpperCase() + filter.slice(1)}
-              </Button>
-            </DropdownMenuTrigger>
+        <Button 
+          variant="outline" 
+          size="sm"
+          onClick={() => setShowArchived(!showArchived)}
+          className={cn("h-7 text-xs", showArchived && "bg-primary/10 border-primary text-primary")}
+        >
+          {showArchived ? t('hideArchived') : t('showArchived')}
+        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm" className="h-7 text-xs gap-1.5">
+              <Filter className="h-3 w-3" />
+              {filter.charAt(0).toUpperCase() + filter.slice(1)}
+            </Button>
+          </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56 bg-card/95 backdrop-blur-xl border-border">
               <div className="px-2 py-1.5 text-[10px] font-bold text-muted-foreground uppercase tracking-widest border-b border-border/50 mb-1">Status</div>
               <DropdownMenuItem onClick={() => setFilter("all")}>All Statuses</DropdownMenuItem>
@@ -368,22 +330,11 @@ export default function WorkOrdersPage() {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-      </motion.div>
+      </div>
 
-      {/* Work Orders List */}
-      <motion.div variants={fadeInUp}>
-        <Card className="border-border shadow-sm overflow-hidden">
-          <CardHeader className="pb-0">
-            <div className="flex items-center justify-between mb-2">
-              <CardTitle className="text-xl">
-                {showArchived ? (t('allInterventions')) : (t('activeInterventions'))}
-              </CardTitle>
-              <Badge variant="outline" className="font-normal text-muted-foreground">
-                {filteredOrders.length} {t('results')}
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent className="p-0">
+      {/* Work Orders Table */}
+      <Card>
+        <CardContent className="p-0">
             {isLoading ? (
               <div className="flex flex-col items-center justify-center py-20 gap-4">
                 <div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
@@ -477,34 +428,23 @@ export default function WorkOrdersPage() {
                 </Table>
               </div>
             )}
-          </CardContent>
           {totalPages > 1 && (
-            <div className="flex items-center justify-between border-t border-border p-4">
+            <div className="flex items-center justify-between border-t p-4">
               <p className="text-sm text-muted-foreground">
                 {t('showing')} <span className="font-medium">{((currentPage - 1) * itemsPerPage) + 1}</span> {t('to')} <span className="font-medium">{Math.min(currentPage * itemsPerPage, filteredOrders.length)}</span> {t('of')} <span className="font-medium">{filteredOrders.length}</span> {t('results')}
               </p>
               <div className="flex flex-wrap gap-2 min-w-0">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                  disabled={currentPage === 1}
-                >
+                <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>
                   {t('previous')}
                 </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                  disabled={currentPage === totalPages}
-                >
+                <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>
                   {t('next')}
                 </Button>
               </div>
             </div>
           )}
-        </Card>
-      </motion.div>
-    </motion.div>
+        </CardContent>
+      </Card>
+    </div>
   )
 }

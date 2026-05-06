@@ -250,44 +250,19 @@ export default function TasksPage() {
   if (!isAuthenticated) return null
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="space-y-6"
-    >
-      {/* HEADER & BREADCRUMBS */}
-      <div className="flex flex-col gap-4">
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link href="/">Dashboard</Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Task Center</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">
-              {t('executionTaskCenter')}
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Manage hospital maintenance operations and clinical compliance tasks.
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-              <DialogTrigger asChild>
-                <Button className="h-10">
-                  <Plus className="h-4 w-4 mr-2" />
-                  New Major Task
-                </Button>
-              </DialogTrigger>
+    <div className="space-y-3">
+      {/* Header - Compact */}
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div className="flex items-center gap-2">
+          <h1 className="text-base font-semibold text-foreground">{t('executionTaskCenter')}</h1>
+        </div>
+        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+          <DialogTrigger asChild>
+            <Button size="sm" className="h-7 gap-1.5 bg-primary">
+              <Plus className="h-3 w-3" />
+              New Task
+            </Button>
+          </DialogTrigger>
             <DialogContent className="sm:max-w-md">
               <DialogHeader>
                 <DialogTitle>Create Execution Task</DialogTitle>
@@ -453,81 +428,76 @@ export default function TasksPage() {
                 <Button onClick={() => handleAddAdHocTask()}>Create Task</Button>
               </DialogFooter>
             </DialogContent>
-           </Dialog>
-         </div>
-       </div>
-     </div>
-      {/* Stats Overview */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        </Dialog>
+      </div>
+      {/* Stats - Compact Grid */}
+      <div className="grid gap-2 grid-cols-3 lg:grid-cols-6">
         {[
-          { label: 'Total Tasks', value: kpis.total, icon: Briefcase, color: "text-muted-foreground", bg: "bg-muted/50" },
+          { label: 'Total', value: kpis.total, icon: Briefcase, color: "text-muted-foreground", bg: "bg-muted/50" },
           { label: 'In Progress', value: kpis.inProgress, icon: Timer, color: "text-info", bg: "bg-info/10" },
           { label: 'Blocked', value: kpis.blocked, icon: AlertTriangle, color: "text-warning", bg: "bg-warning/10" },
           { label: 'Completed', value: kpis.completed, icon: CheckCircle2, color: "text-success", bg: "bg-success/10" },
-          { label: 'Overdue', value: kpis.overdue, icon: AlertCircle, color: "text-danger", bg: "bg-danger/10" },
-          { label: 'Logged Hours', value: `${kpis.hours}h`, icon: Clock, color: "text-primary", bg: "bg-primary/10" },
+          { label: 'Overdue', value: kpis.overdue, icon: AlertCircle, color: "text-destructive", bg: "bg-destructive/10" },
+          { label: 'Hours', value: `${kpis.hours}h`, icon: Clock, color: "text-primary", bg: "bg-primary/10" },
         ].map((stat, i) => (
-          <Card key={i} className="border-border/40 bg-card/40 backdrop-blur-sm shadow-sm ring-1 ring-border/40 hover:ring-primary/30 transition-all">
-            <CardContent className="p-4 flex flex-col justify-between min-h-[110px]">
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{stat.label}</p>
-                <div className={cn("p-2 rounded-xl", stat.bg, stat.color)}>
-                  <stat.icon className="h-4 w-4" />
-                </div>
+          <Card key={i}>
+            <CardContent className="flex items-center gap-2 p-2.5">
+              <div className={cn("rounded p-1.5", stat.bg)}>
+                <stat.icon className={cn("h-4 w-4", stat.color)} />
               </div>
-              <p className="text-3xl font-black text-foreground">{stat.value}</p>
+              <div className="min-w-0">
+                <p className="text-[9px] text-muted-foreground uppercase truncate">{stat.label}</p>
+                <p className="text-lg font-bold text-foreground">{stat.value}</p>
+              </div>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      {/* Filters & Search */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      {/* Filters - Compact */}
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="relative flex-1 min-w-48">
+          <Search className="absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
           <Input 
-            placeholder="Search tasks by instruction or ID..." 
-            className="pl-9 h-11 bg-card/40 border-border/40"
+            placeholder="Search tasks..." 
+            className="h-7 pl-7 text-xs"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <div className="flex items-center gap-2">
-            <Button variant="outline" className="h-11 px-4 border-border/40 bg-card/40 backdrop-blur-sm text-[10px] font-bold uppercase tracking-widest">
-               <Filter className="h-4 w-4 mr-2" /> Filters
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm" className="h-7 text-xs gap-1.5">
+              <Filter className="h-3 w-3" />
+              {filter === 'all' ? 'All' : filter}
             </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="h-11 px-4 border-border/40 bg-card/40 backdrop-blur-sm text-[10px] font-bold uppercase tracking-widest">
-                  Status: <span className="ml-1 text-primary">{filter === 'all' ? 'All' : filter}</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem onClick={() => setFilter("all")} className="text-[10px] font-bold uppercase">All Status</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => setFilter("TODO")} className="text-[10px] font-bold uppercase">To Do</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setFilter("IN_PROGRESS")} className="text-[10px] font-bold uppercase">In Progress</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setFilter("DONE")} className="text-[10px] font-bold uppercase">Completed</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setFilter("BLOCKED")} className="text-[10px] font-bold uppercase">Blocked</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-        </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-40">
+            <DropdownMenuItem onClick={() => setFilter("all")}>All Status</DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => setFilter("TODO")}>To Do</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setFilter("IN_PROGRESS")}>In Progress</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setFilter("DONE")}>Completed</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setFilter("BLOCKED")}>Blocked</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {/* Tasks Table */}
-      <div className="rounded-xl border border-border/40 bg-card/40 backdrop-blur-sm overflow-hidden shadow-sm">
-        {isLoading ? (
-          <div className="p-24 flex flex-col items-center justify-center gap-4">
-             <div className="h-10 w-10 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-             <p className="text-[10px] font-bold text-muted-foreground animate-pulse uppercase tracking-widest">Compiling hierarchy...</p>
-          </div>
-        ) : (
-          <TaskExecutionHub 
-            tasks={filteredTasks}
-            onUpdate={loadData}
-          />
-        )}
-      </div>
+      <Card>
+        <CardContent className="p-0">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="h-6 w-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : (
+            <TaskExecutionHub 
+              tasks={filteredTasks}
+              onUpdate={loadData}
+            />
+          )}
+        </CardContent>
+      </Card>
 
       <Dialog open={isRescheduleDialogOpen} onOpenChange={setIsRescheduleDialogOpen}>
         <DialogContent className="sm:max-w-md">
@@ -557,6 +527,6 @@ export default function TasksPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </motion.div>
+    </div>
   )
 }

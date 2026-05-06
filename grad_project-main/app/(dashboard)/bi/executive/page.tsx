@@ -25,13 +25,16 @@ function Empty(){return <div className="flex items-center justify-center h-full 
 function KpiCard({label,sub,value,icon,trend,colorClass,bgClass,colorVar,bgColorVar,higherIsBetter=true}:any){
   const isGood=trend!=null&&trend!==0?(higherIsBetter?trend>0:trend<0):null
   return(
-    <Card className="border-none bg-card/50 backdrop-blur-sm shadow-xl ring-1 ring-border hover:shadow-2xl transition-all">
-      <CardContent className="p-5">
-        <div className={cn("inline-flex p-2 rounded-lg mb-3",bgClass,colorClass)} style={{ backgroundColor: bgColorVar, color: colorVar }}>{icon}</div>
-        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">{label}</p>
-        <p className="text-2xl font-bold mt-0.5">{value}</p>
-        <p className="text-[10px] text-muted-foreground">{sub}</p>
-        {isGood!==null&&<div className={cn("inline-flex items-center gap-1 mt-2 text-[10px] font-semibold px-2 py-0.5 rounded-full",isGood?"bg-emerald-50 text-emerald-700":"bg-rose-50 text-rose-700")}>{isGood?<TrendingUp className="h-3 w-3"/>:<TrendingDown className="h-3 w-3"/>}{Math.abs(trend).toFixed(1)}%</div>}
+    <Card>
+      <CardContent className="p-2.5">
+        <div className="flex items-center gap-2">
+          <div className={cn("p-1.5 rounded",bgClass,colorClass)} style={{ backgroundColor: bgColorVar, color: colorVar }}>{icon}</div>
+          <div className="min-w-0 flex-1">
+            <p className="text-[9px] text-muted-foreground uppercase truncate">{label}</p>
+            <p className="text-lg font-bold">{value}</p>
+          </div>
+        </div>
+        {isGood!==null&&<div className={cn("inline-flex items-center gap-1 mt-1.5 text-[9px] font-semibold px-1.5 py-0.5 rounded-full",isGood?"bg-emerald-50 text-emerald-700":"bg-rose-50 text-rose-700")}>{isGood?<TrendingUp className="h-2.5 w-2.5"/>:<TrendingDown className="h-2.5 w-2.5"/>}{Math.abs(trend).toFixed(1)}%</div>}
       </CardContent>
     </Card>
   )
@@ -114,61 +117,41 @@ export default function ExecutiveDashboard(){
   )
 
   return(
-    <motion.div initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} transition={{duration:0.4}} className="space-y-6 pb-12">
-      {/* Header */}
-      <div className="flex flex-col gap-1 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-indigo-100 dark:bg-indigo-900/30"><BarChart2 className="h-6 w-6 text-indigo-600"/></div>
-            {t('managementDashboard')}
-          </h1>
-          <p className="text-muted-foreground ml-14">{t('strategicKPIsProject')}</p>
-        </div>
-        <Button variant="outline" className="gap-2" onClick={()=>load(true)} disabled={refreshing}>
-          <RefreshCw className={cn("h-4 w-4",refreshing&&"animate-spin")}/>Refresh
+    <div className="space-y-3">
+      {/* Header - Compact */}
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <h1 className="text-base font-semibold text-foreground">{t('managementDashboard')}</h1>
+        <Button variant="outline" size="sm" className="h-7 gap-1.5" onClick={()=>load(true)} disabled={refreshing}>
+          <RefreshCw className={cn("h-3 w-3",refreshing&&"animate-spin")}/>Refresh
         </Button>
       </div>
 
-      {/* Filter Bar */}
-      <Card className="border-none bg-card/60 backdrop-blur-sm shadow-lg ring-1 ring-border">
-        <CardContent className="py-4">
-          <div className="flex flex-wrap gap-3 items-end">
-            <div className="flex flex-col gap-1.5 flex-1 min-w-[200px]">
-              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1"><Search className="h-3 w-3"/>{t('equipmentName')}</label>
-              <div className="relative"><Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"/>
-                <Input placeholder={t('search')} value={nameQ} onChange={e=>setNameQ(e.target.value)} className="pl-9"/>
-              </div>
-            </div>
-            <div className="flex flex-col gap-1.5 min-w-[180px]">
-              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1"><Settings2 className="h-3 w-3"/>{t('category')}</label>
-              <Select value={catF} onValueChange={setCatF}>
-                <SelectTrigger><SelectValue placeholder="All Categories"/></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={ALL}>All Categories</SelectItem>
-                  {cats.map(c=><SelectItem key={c.categoryId} value={String(c.categoryId)}>{c.name}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex flex-col gap-1.5 min-w-[180px]">
-              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1"><Filter className="h-3 w-3"/>{t('department')}</label>
-              <Select value={deptF} onValueChange={setDeptF}>
-                <SelectTrigger><SelectValue placeholder="All Departments"/></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={ALL}>All Departments</SelectItem>
-                  {depts.map(d=><SelectItem key={d.departmentId} value={String(d.departmentId)}>{d.departmentName}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-            {hasFilter&&<Button variant="outline" size="sm" onClick={clear} className="gap-2 self-end h-10"><X className="h-4 w-4"/>Clear</Button>}
-            <div className="self-end ml-auto">
-              <Badge variant="secondary" className="h-10 px-4 text-sm font-semibold rounded-lg">{filteredWos.length} WOs</Badge>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Filter Bar - Compact */}
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="relative flex-1 min-w-48">
+          <Search className="absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground"/>
+          <Input placeholder={t('search')} value={nameQ} onChange={e=>setNameQ(e.target.value)} className="h-7 pl-7 text-xs"/>
+        </div>
+        <Select value={catF} onValueChange={setCatF}>
+          <SelectTrigger className="w-28 h-7 text-xs"><SelectValue placeholder="Category"/></SelectTrigger>
+          <SelectContent>
+            <SelectItem value={ALL}>All</SelectItem>
+            {cats.map(c=><SelectItem key={c.categoryId} value={String(c.categoryId)}>{c.name}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <Select value={deptF} onValueChange={setDeptF}>
+          <SelectTrigger className="w-28 h-7 text-xs"><SelectValue placeholder="Dept"/></SelectTrigger>
+          <SelectContent>
+            <SelectItem value={ALL}>All</SelectItem>
+            {depts.map(d=><SelectItem key={d.departmentId} value={String(d.departmentId)}>{d.departmentName}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        {hasFilter&&<Button variant="outline" size="sm" onClick={clear} className="h-7 text-xs gap-1"><X className="h-3 w-3"/>Clear</Button>}
+        <Badge variant="secondary" className="h-7 px-2 text-xs">{filteredWos.length} WOs</Badge>
+      </div>
 
-      {/* Strategic KPI Cards */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+      {/* Strategic KPI Cards - Compact */}
+      <div className="grid gap-2 grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <KpiCard label="MTBF" sub="Mean Time Between Failures" value={`${kpi?.mtbf?.toFixed(0)??"—"}h`} icon={<Activity className="h-5 w-5"/>} trend={kpi?.mtbfTrend} colorClass="text-emerald-600" bgClass="bg-emerald-50 dark:bg-emerald-900/20" higherIsBetter/>
         <KpiCard label="MTTR" sub="Mean Time To Repair" value={`${kpi?.mttr?.toFixed(1)??"—"}h`} icon={<Clock className="h-5 w-5"/>} trend={kpi?.mttrTrend} colorClass="text-indigo-600" bgClass="bg-indigo-50 dark:bg-indigo-900/20" higherIsBetter={false}/>
         <KpiCard label={t('availability')} sub="Equipment availability rate" value={`${kpi?.availabilityRate?.toFixed(1)??"—"}%`} icon={<Activity className="h-5 w-5"/>} colorClass="text-cyan-600" bgClass="bg-cyan-50 dark:bg-cyan-900/20" higherIsBetter/>
@@ -177,11 +160,11 @@ export default function ExecutiveDashboard(){
         <KpiCard label={t('costDept')} sub={hasFilter?"Filtered avg from WOs":"Avg cost per department"} value={fmt$(avgCostDept)} icon={<DollarSign className="h-5 w-5"/>} colorClass="text-rose-600" bgClass="bg-rose-50 dark:bg-rose-900/20" higherIsBetter={false}/>
       </div>
 
-      {/* Row 1: Cost trend + Pareto */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card className="border-none bg-card/50 backdrop-blur-sm shadow-xl ring-1 ring-border">
-          <CardHeader><CardTitle className="text-base">{t('monthlyCostTrend')}</CardTitle><CardDescription>12-month maintenance cost trend curve</CardDescription></CardHeader>
-          <CardContent className="h-[280px]">
+      {/* Row 1: Cost trend + Pareto - Compact */}
+      <div className="grid gap-2 lg:grid-cols-2">
+        <Card>
+          <CardHeader className="pb-1"><CardTitle className="text-sm">{t('monthlyCostTrend')}</CardTitle></CardHeader>
+          <CardContent className="h-[180px] pt-0">
             {costTrends.length===0?<Empty/>:(
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={costTrends} margin={{top:10,right:10,left:0,bottom:0}}>
@@ -196,9 +179,9 @@ export default function ExecutiveDashboard(){
             )}
           </CardContent>
         </Card>
-        <Card className="border-none bg-card/50 backdrop-blur-sm shadow-xl ring-1 ring-border">
-          <CardHeader><CardTitle className="text-base">{t('paretoChartEquipment')}</CardTitle><CardDescription>80% of costs driven by 20% of equipment {hasFilter&&"· filtered"}</CardDescription></CardHeader>
-          <CardContent className="h-[280px]">
+        <Card>
+          <CardHeader className="pb-1"><CardTitle className="text-sm">{t('paretoChartEquipment')}</CardTitle></CardHeader>
+          <CardContent className="h-[180px] pt-0">
             {paretoData.length===0?<Empty/>:(
               <ResponsiveContainer width="100%" height="100%">
                 <ComposedChart data={paretoData} margin={{top:10,right:30,left:0,bottom:40}}>
@@ -216,11 +199,11 @@ export default function ExecutiveDashboard(){
         </Card>
       </div>
 
-      {/* Row 2: Cost distribution by dept + Annual projection */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card className="border-none bg-card/50 backdrop-blur-sm shadow-xl ring-1 ring-border">
-          <CardHeader><CardTitle className="text-base">{t('costDistributionByDe')}</CardTitle><CardDescription>Derived from work order actual costs {hasFilter&&"· filtered"}</CardDescription></CardHeader>
-          <CardContent className="h-[280px]">
+      {/* Row 2: Cost distribution - Compact */}
+      <div className="grid gap-2 lg:grid-cols-2">
+        <Card>
+          <CardHeader className="pb-1"><CardTitle className="text-sm">{t('costDistributionByDe')}</CardTitle></CardHeader>
+          <CardContent className="h-[180px] pt-0">
             {costPerDept.length===0?<Empty/>:(
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -234,9 +217,9 @@ export default function ExecutiveDashboard(){
             )}
           </CardContent>
         </Card>
-        <Card className="border-none bg-card/50 backdrop-blur-sm shadow-xl ring-1 ring-border">
-          <CardHeader><CardTitle className="text-base">{t('annualCostProjection')}</CardTitle><CardDescription>End-of-year budget forecast</CardDescription></CardHeader>
-          <CardContent className="h-[280px]">
+        <Card>
+          <CardHeader className="pb-1"><CardTitle className="text-sm">{t('annualCostProjection')}</CardTitle></CardHeader>
+          <CardContent className="h-[180px] pt-0">
             {annualData.length===0?<Empty/>:(
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={annualData} layout="vertical" margin={{top:10,right:30,left:10,bottom:10}}>
@@ -252,10 +235,10 @@ export default function ExecutiveDashboard(){
         </Card>
       </div>
 
-      {/* Maintenance cost per equipment top 8 */}
-      <Card className="border-none bg-card/50 backdrop-blur-sm shadow-xl ring-1 ring-border">
-        <CardHeader><CardTitle className="text-base">{t('maintenanceCostEquip')}</CardTitle><CardDescription>Derived from work order actual costs {hasFilter&&"· filtered by selected criteria"}</CardDescription></CardHeader>
-        <CardContent className="h-[300px]">
+      {/* Maintenance cost per equipment - Compact */}
+      <Card>
+        <CardHeader className="pb-1"><CardTitle className="text-sm">{t('maintenanceCostEquip')}</CardTitle></CardHeader>
+        <CardContent className="h-[200px] pt-0">
           {costPerEq.length===0?<Empty/>:(
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={costPerEq} margin={{top:10,right:10,left:0,bottom:40}}>
@@ -270,10 +253,10 @@ export default function ExecutiveDashboard(){
         </CardContent>
       </Card>
 
-      {/* Costly equipment table from KPI API */}
+      {/* Costly equipment table - Compact */}
       {(kpi?.costlyEquipments?.length??0)>0&&(
-        <Card className="border-none bg-card/50 backdrop-blur-sm shadow-xl ring-1 ring-border">
-          <CardHeader><CardTitle className="text-base">{t('topCostlyEquipment')}</CardTitle><CardDescription>Assets with highest cumulative maintenance spend</CardDescription></CardHeader>
+        <Card>
+          <CardHeader className="pb-1"><CardTitle className="text-sm">{t('topCostlyEquipment')}</CardTitle></CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -299,6 +282,6 @@ export default function ExecutiveDashboard(){
           </CardContent>
         </Card>
       )}
-    </motion.div>
+    </div>
   )
 }
